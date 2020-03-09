@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.briup.mapper.AttendanceMapper" >
+  <resultMap id="BaseResultMap" type="com.briup.bean.Attendance" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="ATTEND_TIME" property="attendTime" jdbcType="DATE" />
+    <result column="ATTEND_STATE" property="attendState" jdbcType="DECIMAL" />
+    <result column="EMP_ID" property="empId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ID, ATTEND_TIME, ATTEND_STATE, EMP_ID
+  </sql>
+  
+  
+  <!-- 自定义 -->
+   <sql id="Example_Where_Clause_Page" >
+    <where>
+       <if test="min gte 0">
+      	and e.rw >= #{min}
+      </if>
+      <if test="max gte 0">
+      	and e.rw &lt;= #{max}
+      </if>
+    </where>
+  </sql>
+  <select id="selectByExamplePage" resultMap="BaseResultMap" parameterType="com.briup.bean.vo.AttendanceVo" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    e.*
+    from (select <include refid="Base_Column_List" />, rownum rw from ATTENDANCE  
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>) e
+    <if test="min!=null and max!=null">
+    	<include refid="Example_Where_Clause_Page" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <!-- 自定义 end -->
+  
+  
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.briup.bean.AttendanceExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ATTENDANCE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ATTENDANCE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ATTENDANCE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.briup.bean.AttendanceExample" >
+    delete from ATTENDANCE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.briup.bean.Attendance" >
+    <selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE" >
+      select att_seq.nextVal from dual
+    </selectKey>
+    insert into ATTENDANCE (ID, ATTEND_TIME, ATTEND_STATE, 
+      EMP_ID)
+    values (#{id,jdbcType=VARCHAR}, #{attendTime,jdbcType=DATE}, #{attendState,jdbcType=DECIMAL}, 
+      #{empId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.briup.bean.Attendance" >
+    <selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE" >
+      select att_seq.nextVal from dual
+    </selectKey>
+    insert into ATTENDANCE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      ID,
+      <if test="attendTime != null" >
+        ATTEND_TIME,
+      </if>
+      <if test="attendState != null" >
+        ATTEND_STATE,
+      </if>
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{id,jdbcType=VARCHAR},
+      <if test="attendTime != null" >
+        #{attendTime,jdbcType=DATE},
+      </if>
+      <if test="attendState != null" >
+        #{attendState,jdbcType=DECIMAL},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.briup.bean.AttendanceExample" resultType="java.lang.Integer" >
+    select count(*) from ATTENDANCE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update ATTENDANCE
+    <set >
+      <if test="record.id != null" >
+        ID = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.attendTime != null" >
+        ATTEND_TIME = #{record.attendTime,jdbcType=DATE},
+      </if>
+      <if test="record.attendState != null" >
+        ATTEND_STATE = #{record.attendState,jdbcType=DECIMAL},
+      </if>
+      <if test="record.empId != null" >
+        EMP_ID = #{record.empId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update ATTENDANCE
+    set ID = #{record.id,jdbcType=VARCHAR},
+      ATTEND_TIME = #{record.attendTime,jdbcType=DATE},
+      ATTEND_STATE = #{record.attendState,jdbcType=DECIMAL},
+      EMP_ID = #{record.empId,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.briup.bean.Attendance" >
+    update ATTENDANCE
+    <set >
+      <if test="attendTime != null" >
+        ATTEND_TIME = #{attendTime,jdbcType=DATE},
+      </if>
+      <if test="attendState != null" >
+        ATTEND_STATE = #{attendState,jdbcType=DECIMAL},
+      </if>
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.briup.bean.Attendance" >
+    update ATTENDANCE
+    set ATTEND_TIME = #{attendTime,jdbcType=DATE},
+      ATTEND_STATE = #{attendState,jdbcType=DECIMAL},
+      EMP_ID = #{empId,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

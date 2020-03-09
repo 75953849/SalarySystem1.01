@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.briup.mapper.SalaryMapper" >
+  <resultMap id="BaseResultMap" type="com.briup.bean.Salary" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="EMP_ID" property="empId" jdbcType="VARCHAR" />
+    <result column="DEP_ID" property="depId" jdbcType="VARCHAR" />
+    <result column="SAL_TIME" property="salTime" jdbcType="DATE" />
+    <result column="BASE_SALARY" property="baseSalary" jdbcType="DECIMAL" />
+    <result column="OVERTIME_PAY" property="overtimePay" jdbcType="DECIMAL" />
+    <result column="LEAVE_FEE" property="leaveFee" jdbcType="DECIMAL" />
+    <result column="ABSENT_PAY" property="absentPay" jdbcType="DECIMAL" />
+    <result column="TOTAL" property="total" jdbcType="DECIMAL" />
+    <result column="SALAYSTATE" property="salaystate" jdbcType="DECIMAL" />
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="DEP_NAME" property="depName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ID, EMP_ID, DEP_ID, SAL_TIME, BASE_SALARY, OVERTIME_PAY, LEAVE_FEE, ABSENT_PAY, TOTAL, 
+    SALAYSTATE, EMP_NAME, DEP_NAME
+  </sql>
+  
+  
+   <!-- 自定义 -->
+   <sql id="Example_Where_Clause_Page" >
+    <where>
+       <if test="min gte 0">
+      	and e.rw >= #{min}
+      </if>
+      <if test="max gte 0">
+      	and e.rw &lt;= #{max}
+      </if>
+    </where>
+  </sql>
+  <select id="selectByExamplePage" resultMap="BaseResultMap" parameterType="com.briup.bean.vo.SalaryVo" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    e.*
+    from (select <include refid="Base_Column_List" />, rownum rw from Salary  
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>) e
+    <if test="min!=null and max!=null">
+    	<include refid="Example_Where_Clause_Page" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <!-- 自定义 end -->
+  
+  
+  
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.briup.bean.SalaryExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from SALARY
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from SALARY
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from SALARY
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.briup.bean.SalaryExample" >
+    delete from SALARY
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.briup.bean.Salary" >
+    <selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE" >
+      select sal_seq.nextVal from dual
+    </selectKey>
+    insert into SALARY (ID, EMP_ID, DEP_ID, 
+      SAL_TIME, BASE_SALARY, OVERTIME_PAY, 
+      LEAVE_FEE, ABSENT_PAY, TOTAL, 
+      SALAYSTATE, EMP_NAME, DEP_NAME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR}, #{depId,jdbcType=VARCHAR}, 
+      #{salTime,jdbcType=DATE}, #{baseSalary,jdbcType=DECIMAL}, #{overtimePay,jdbcType=DECIMAL}, 
+      #{leaveFee,jdbcType=DECIMAL}, #{absentPay,jdbcType=DECIMAL}, #{total,jdbcType=DECIMAL}, 
+      #{salaystate,jdbcType=DECIMAL}, #{empName,jdbcType=VARCHAR}, #{depName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.briup.bean.Salary" >
+    <selectKey resultType="java.lang.String" keyProperty="id" order="BEFORE" >
+      select sal_seq.nextVal from dual
+    </selectKey>
+    insert into SALARY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      ID,
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="depId != null" >
+        DEP_ID,
+      </if>
+      <if test="salTime != null" >
+        SAL_TIME,
+      </if>
+      <if test="baseSalary != null" >
+        BASE_SALARY,
+      </if>
+      <if test="overtimePay != null" >
+        OVERTIME_PAY,
+      </if>
+      <if test="leaveFee != null" >
+        LEAVE_FEE,
+      </if>
+      <if test="absentPay != null" >
+        ABSENT_PAY,
+      </if>
+      <if test="total != null" >
+        TOTAL,
+      </if>
+      <if test="salaystate != null" >
+        SALAYSTATE,
+      </if>
+      <if test="empName != null" >
+        EMP_NAME,
+      </if>
+      <if test="depName != null" >
+        DEP_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{id,jdbcType=VARCHAR},
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="depId != null" >
+        #{depId,jdbcType=VARCHAR},
+      </if>
+      <if test="salTime != null" >
+        #{salTime,jdbcType=DATE},
+      </if>
+      <if test="baseSalary != null" >
+        #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="overtimePay != null" >
+        #{overtimePay,jdbcType=DECIMAL},
+      </if>
+      <if test="leaveFee != null" >
+        #{leaveFee,jdbcType=DECIMAL},
+      </if>
+      <if test="absentPay != null" >
+        #{absentPay,jdbcType=DECIMAL},
+      </if>
+      <if test="total != null" >
+        #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="salaystate != null" >
+        #{salaystate,jdbcType=DECIMAL},
+      </if>
+      <if test="empName != null" >
+        #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="depName != null" >
+        #{depName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.briup.bean.SalaryExample" resultType="java.lang.Integer" >
+    select count(*) from SALARY
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update SALARY
+    <set >
+      <if test="record.id != null" >
+        ID = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.empId != null" >
+        EMP_ID = #{record.empId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.depId != null" >
+        DEP_ID = #{record.depId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.salTime != null" >
+        SAL_TIME = #{record.salTime,jdbcType=DATE},
+      </if>
+      <if test="record.baseSalary != null" >
+        BASE_SALARY = #{record.baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="record.overtimePay != null" >
+        OVERTIME_PAY = #{record.overtimePay,jdbcType=DECIMAL},
+      </if>
+      <if test="record.leaveFee != null" >
+        LEAVE_FEE = #{record.leaveFee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.absentPay != null" >
+        ABSENT_PAY = #{record.absentPay,jdbcType=DECIMAL},
+      </if>
+      <if test="record.total != null" >
+        TOTAL = #{record.total,jdbcType=DECIMAL},
+      </if>
+      <if test="record.salaystate != null" >
+        SALAYSTATE = #{record.salaystate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.empName != null" >
+        EMP_NAME = #{record.empName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.depName != null" >
+        DEP_NAME = #{record.depName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update SALARY
+    set ID = #{record.id,jdbcType=VARCHAR},
+      EMP_ID = #{record.empId,jdbcType=VARCHAR},
+      DEP_ID = #{record.depId,jdbcType=VARCHAR},
+      SAL_TIME = #{record.salTime,jdbcType=DATE},
+      BASE_SALARY = #{record.baseSalary,jdbcType=DECIMAL},
+      OVERTIME_PAY = #{record.overtimePay,jdbcType=DECIMAL},
+      LEAVE_FEE = #{record.leaveFee,jdbcType=DECIMAL},
+      ABSENT_PAY = #{record.absentPay,jdbcType=DECIMAL},
+      TOTAL = #{record.total,jdbcType=DECIMAL},
+      SALAYSTATE = #{record.salaystate,jdbcType=DECIMAL},
+      EMP_NAME = #{record.empName,jdbcType=VARCHAR},
+      DEP_NAME = #{record.depName,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.briup.bean.Salary" >
+    update SALARY
+    <set >
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="depId != null" >
+        DEP_ID = #{depId,jdbcType=VARCHAR},
+      </if>
+      <if test="salTime != null" >
+        SAL_TIME = #{salTime,jdbcType=DATE},
+      </if>
+      <if test="baseSalary != null" >
+        BASE_SALARY = #{baseSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="overtimePay != null" >
+        OVERTIME_PAY = #{overtimePay,jdbcType=DECIMAL},
+      </if>
+      <if test="leaveFee != null" >
+        LEAVE_FEE = #{leaveFee,jdbcType=DECIMAL},
+      </if>
+      <if test="absentPay != null" >
+        ABSENT_PAY = #{absentPay,jdbcType=DECIMAL},
+      </if>
+      <if test="total != null" >
+        TOTAL = #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="salaystate != null" >
+        SALAYSTATE = #{salaystate,jdbcType=DECIMAL},
+      </if>
+      <if test="empName != null" >
+        EMP_NAME = #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="depName != null" >
+        DEP_NAME = #{depName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.briup.bean.Salary" >
+    update SALARY
+    set EMP_ID = #{empId,jdbcType=VARCHAR},
+      DEP_ID = #{depId,jdbcType=VARCHAR},
+      SAL_TIME = #{salTime,jdbcType=DATE},
+      BASE_SALARY = #{baseSalary,jdbcType=DECIMAL},
+      OVERTIME_PAY = #{overtimePay,jdbcType=DECIMAL},
+      LEAVE_FEE = #{leaveFee,jdbcType=DECIMAL},
+      ABSENT_PAY = #{absentPay,jdbcType=DECIMAL},
+      TOTAL = #{total,jdbcType=DECIMAL},
+      SALAYSTATE = #{salaystate,jdbcType=DECIMAL},
+      EMP_NAME = #{empName,jdbcType=VARCHAR},
+      DEP_NAME = #{depName,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
